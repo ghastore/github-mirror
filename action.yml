@@ -1,0 +1,35 @@
+name: "Git Repo Mirror"
+author: "iHub TO <mail@ihub.to>"
+description: "Universal mirroring repository tool."
+branding:
+  icon: "upload-cloud"
+  color: "gray-dark"
+inputs:
+  src_repo:
+    description: "Repository (Source)"
+    required: true
+  src_user:
+    description: "User (Source)"
+    required: true
+  src_token:
+    description: "Token (Source)"
+    required: true
+  dst_repo:
+    description: "Repository (Destination)"
+    required: true
+  dst_user:
+    description: "User (Destination)"
+    required: true
+  dst_token:
+    description: "Token (Destination)"
+    required: true
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.src_repo }}
+    - ${{ inputs.src_user }}
+    - ${{ inputs.src_token }}
+    - ${{ inputs.dst_repo }}
+    - ${{ inputs.dst_user }}
+    - ${{ inputs.dst_token }}
