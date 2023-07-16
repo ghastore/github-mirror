@@ -1,4 +1,4 @@
-# Git Repository Mirror
+# GitHub Mirror
 
 Universal mirroring repository tool.
 
