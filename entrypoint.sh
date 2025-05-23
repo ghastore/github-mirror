@@ -1,5 +1,3 @@
-#!/usr/bin/env -S bash -euo pipefail
+#!/bin/bash
 
-bash -c "/mirror.sh $*"
-
-exit 0
+set -euo pipefail; bash -c "/mirror.sh $*"
