@@ -1,75 +1,53 @@
-#!/bin/bash -e
-#
-# Universal mirroring repository tool.
-#
+#!/usr/bin/env -S bash -euo pipefail
+# -------------------------------------------------------------------------------------------------------------------- #
+# UNIVERSAL MIRRORING REPOSITORY TOOL
+# -------------------------------------------------------------------------------------------------------------------- #
 # @package    Bash
-# @author     Kai Kimera <mail@kai.kim>
-# @copyright  2023 Kai Kimera
+# @author     Kai Kimera
 # @license    MIT
-# @version    0.0.1
+# @version    0.1.0
 # @link       https://github.com/ghastore
 # -------------------------------------------------------------------------------------------------------------------- #
 
-# -------------------------------------------------------------------------------------------------------------------- #
-# CONFIGURATION.
-# -------------------------------------------------------------------------------------------------------------------- #
+(( EUID != 0 )) && { echo >&2 'This script should be run as root!'; exit 1; }
 
-# Vars.
-SRC_REPO="${1}"
-SRC_USER="${2}"
-SRC_TOKEN="${3}"
-DST_REPO="${4}"
-DST_USER="${5}"
-DST_TOKEN="${6}"
+# Parameters.
+SRC_REPO="${1:?}"; readonly SRC_REPO
+SRC_USER="${2:?}"; readonly SRC_USER
+SRC_TOKEN="${3:?}"; readonly SRC_TOKEN
+DST_REPO="${4:?}"; readonly DST_REPO
+DST_USER="${5:?}"; readonly DST_USER
+DST_TOKEN="${6:?}"; readonly DST_TOKEN
 
-# Apps.
-git="$( command -v git )"
-
-# Dirs.
-d_src="/root/git/src"
+# Variables.
+d_src='/root/git/src'
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# INITIALIZATION.
+# -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-init() {
-  mirror
+function _pushd() {
+  command pushd "$@" > '/dev/null' || exit 1
 }
 
-# -------------------------------------------------------------------------------------------------------------------- #
-# GIT: MIRROR.
-# -------------------------------------------------------------------------------------------------------------------- #
+function _popd() {
+  command popd > '/dev/null' || exit 1
+}
 
-mirror() {
-  echo "--- [GIT] CLONE: ${SRC_REPO#https://}"
+function _title() {
+  echo '' && echo "${1}" && echo ''
+}
 
-  local src="https://${SRC_USER}:${SRC_TOKEN}@${SRC_REPO#https://}"
-  local dst="https://${DST_USER}:${DST_TOKEN}@${DST_REPO#https://}"
+function mirror() {
+  _title "--- [GIT] CLONE: ${SRC_REPO#https://}"
+  local src; src="https://${SRC_USER}:${SRC_TOKEN}@${SRC_REPO#https://}"
+  local dst; dst="https://${DST_USER}:${DST_TOKEN}@${DST_REPO#https://}"
 
-  ${git} clone --mirror "${src}" "${d_src}" \
-    && _pushd "${d_src}" || exit 1
-  ${git} remote add 'dst' "${dst}"
-  ${git} push -f --mirror 'dst'
+  git clone --mirror "${src}" "${d_src}" && _pushd "${d_src}" || exit 1
+  git remote add 'dst' "${dst}"
+  git push -f --mirror 'dst'
 
   _popd || exit 1
 }
 
-# -------------------------------------------------------------------------------------------------------------------- #
-# ------------------------------------------------< COMMON FUNCTIONS >------------------------------------------------ #
-# -------------------------------------------------------------------------------------------------------------------- #
-
-# Pushd.
-_pushd() {
-  command pushd "$@" > /dev/null || exit 1
-}
-
-# Popd.
-_popd() {
-  command popd > /dev/null || exit 1
-}
-
-# -------------------------------------------------------------------------------------------------------------------- #
-# -------------------------------------------------< RUNNING SCRIPT >------------------------------------------------- #
-# -------------------------------------------------------------------------------------------------------------------- #
-
-init "$@"; exit 0
+function main() { mirror; }; main "$@"
