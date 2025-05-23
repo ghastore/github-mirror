@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -euo pipefail
+#!/bin/bash
 # -------------------------------------------------------------------------------------------------------------------- #
 # UNIVERSAL MIRRORING REPOSITORY TOOL
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -9,7 +9,7 @@
 # @link       https://github.com/ghastore
 # -------------------------------------------------------------------------------------------------------------------- #
 
-(( EUID != 0 )) && { echo >&2 'This script should be run as root!'; exit 1; }
+set -euo pipefail; (( EUID != 0 )) && { echo >&2 'This script should be run as root!'; exit 1; }
 
 # Parameters.
 SRC_REPO="${1:?}"; readonly SRC_REPO
