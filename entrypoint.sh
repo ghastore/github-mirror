@@ -1,3 +1,3 @@
 #!/bin/bash
 
-bash -c "/mirror.sh $*"
+set -euo pipefail; bash -c "/mirror.sh $*"
