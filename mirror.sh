@@ -11,6 +11,10 @@
 
 set -euo pipefail; (( EUID != 0 )) && { echo >&2 'This script should be run as root!'; exit 1; }
 
+# -------------------------------------------------------------------------------------------------------------------- #
+# CONFIGURATION
+# -------------------------------------------------------------------------------------------------------------------- #
+
 # Parameters.
 SRC_REPO="${1:?}"; readonly SRC_REPO
 SRC_USER="${2:?}"; readonly SRC_USER
@@ -35,7 +39,8 @@ function _popd() {
 }
 
 function _title() {
-  echo '' && echo "${1}" && echo ''
+  local title; title="${1}"
+  echo '' && echo "${title}" && echo ''
 }
 
 function mirror() {
@@ -43,11 +48,10 @@ function mirror() {
   local src; src="https://${SRC_USER}:${SRC_TOKEN}@${SRC_REPO#https://}"
   local dst; dst="https://${DST_USER}:${DST_TOKEN}@${DST_REPO#https://}"
 
-  git clone --mirror "${src}" "${d_src}" && _pushd "${d_src}" || exit 1
-  git remote add 'dst' "${dst}"
-  git push -f --mirror 'dst'
-
-  _popd || exit 1
+  git clone --mirror "${src}" "${d_src}" && _pushd "${d_src}" \
+    && git remote add 'dst' "${dst}" && git push -f --mirror 'dst' && _popd
 }
 
-function main() { mirror; }; main "$@"
+function main() {
+  mirror
+}; main "$@"
